@@ -89,10 +89,6 @@ class TestCircuits(unittest.TestCase):
         c = Nand()
         d = Nand()
         e = Nand()
-        f = Nand()
-        g = Nand()
-        h = Nand()
-        i = Nand()
 
         io.i[0].connect(a.i[0])
         io.i[0].connect(b.i[0])
@@ -111,13 +107,39 @@ class TestCircuits(unittest.TestCase):
         a.o[0].connect(e.i[0])
         a.o[0].connect(e.i[1])
 
-
+        e.o[0].connect(io.o[1])
 
         results = io.calc()
         self.assertEqual(results, {'00': '00',
                                    '01': '10',
                                    '10': '10',
                                    '11': '01'})
+
+class TestCircularConnections(unittest.TestCase):
+    def test_simple_loop(self):
+        a = Nand()
+
+        is_loop = creates_loop(a.o[0],a.i[0])
+        self.assertTrue(is_loop)
+
+    def test_two_gate_loop(self):
+        a = Nand()
+        b = Nand()
+
+        a.o[0].connect(b.i[0])
+
+        is_loop = creates_loop(b.o[0],a.i[0])
+        self.assertTrue(is_loop)
+
+    def test_three_gate_non_loop(self):
+        a = Nand()
+        b = Nand()
+        c = Nand()
+
+        a.o[0].connect(b.i[0])
+
+        is_loop = creates_loop(b.o[0],c.i[0])
+        self.assertFalse(is_loop)
 
 if __name__ == '__main__':
     unittest.main()

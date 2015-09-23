@@ -85,24 +85,31 @@ def creates_loop(o,i):
         return True
 
     for out in start.o: #There should only be one output with a Nand gate
-        print(len(start.o))
         for con in out.connects:
-            if con.owner == o or creates_loop(con,i):
+            if con.owner == end or creates_loop(con,i):
                 return True
     return False
 
-# while outputs != []:
-#     o = outputs.pop(random.randrange(len(outputs)))
-#     i = random.choice(inputs)
-#     while creates_loop(o,i):
-#         i = random.choice(inputs)
-#
-#     i.connect(o)
-#     connections.append((i,o))
-#
-#     if type(i.owner) == Nand:
-#         outputs += i.owner.i
-#         n = Nand()
-#         inputs += n.o
-#
-#     print(inputs,outputs)
+io = IO(1,1)
+inputs = io.i + [Nand()]
+outputs = io.o
+connections = []
+
+#pdb.set_trace()
+
+while outputs != []:
+    o = outputs.pop(random.randrange(len(outputs)))
+    i = random.choice(inputs)
+
+    while not creates_loop(o,i):
+        i = random.choice(inputs)
+
+    i.connect(o)
+    connections.append((i,o))
+
+    if type(i.owner) == Nand:
+        outputs += i.owner.i
+        n = Nand()
+        inputs += n.o
+
+    print(inputs,outputs,connections)
