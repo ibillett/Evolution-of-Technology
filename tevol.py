@@ -106,7 +106,7 @@ def creates_loop(o,i):
                 return True
     return False
 
-io = IO(2,1)
+io = IO(1,1)
 inputs = list(io.i)
 outputs = list(io.o)
 connections = []
@@ -129,6 +129,20 @@ while outputs != []:
         n = Nand()
         inputs += n.o
 
-    print("Inputs: {}\nOutputs: {}\nConnections: {}".format(inputs,outputs,connections))
-
+print("Inputs: {}\nOutputs: {}\nConnections: {}".format(inputs,outputs,connections))
 print(io.calc())
+
+or_gate = {'00':'0',
+           '01':'1',
+           '10':'1',
+           '11':'1'}
+
+and_gate = {'00':'0',
+            '01':'0',
+            '10':'0',
+            '11':'1'}
+
+xor_gate = {'00':'0',
+            '01':'1',
+            '10':'1',
+            '11':'1'}
