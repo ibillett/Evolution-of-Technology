@@ -91,17 +91,20 @@ def creates_loop(o,i):
     return False
 
 io = IO(1,1)
-inputs = io.i + [Nand()]
+inputs = io.i
 outputs = io.o
 connections = []
 
-#pdb.set_trace()
+n = Nand()
+inputs += n.o
+
+pdb.set_trace()
 
 while outputs != []:
     o = outputs.pop(random.randrange(len(outputs)))
     i = random.choice(inputs)
 
-    while not creates_loop(o,i):
+    while creates_loop(o,i):
         i = random.choice(inputs)
 
     i.connect(o)
