@@ -2,6 +2,7 @@ import itertools
 import unittest
 import random
 import string
+import sys
 import pdb
 
 class Connector:
@@ -38,18 +39,19 @@ class Input(Connector):
         Connector.__init__(self, owner, name)
 
     def __repr__(self):
-        return "{} {} {}".format(type(self.owner).__name__, self.__class__.__name__, self.name)
+        return "{} {} {}".format(self.owner.name, self.__class__.__name__, self.name)
 
 class Output(Connector):
     def __init__(self, owner, name):
         Connector.__init__(self, owner, name)
 
     def __repr__(self):
-        return "{} {} {}".format(type(self.owner).__name__, self.__class__.__name__, self.name)
+        return "{} {} {}".format(self.owner.name, self.__class__.__name__, self.name)
 
 class Nand:
     def __init__(self):
         self.id = id(self)
+        self.name = "{} {}".format(self.__class__.__name__, self.id % 100)
         self.i = [Input(self, string.ascii_uppercase[i]) for i in range(0,2)]
         self.o = [Output(self, 'A')]
 
@@ -62,6 +64,7 @@ class Nand:
 class IO:
     def __init__(self, input_length, output_length):
         self.id = id(self)
+        self.name = "IO"
         self.ilen = input_length
         self.olen = output_length
         self.table = ["".join(seq) for seq in itertools.product("01", repeat=self.ilen)]
@@ -92,8 +95,6 @@ class IO:
         pass
 
 def creates_loop(o,i):
-    assert type(o) == Output
-    assert type(i) == Input
     end = o.owner
     start = i.owner
     if start == end:
@@ -105,31 +106,29 @@ def creates_loop(o,i):
                 return True
     return False
 
-# io = IO(1,1)
-# inputs = io.i
-# outputs = io.o
-# connections = []
-#
-# n = Nand()
-# inputs += n.o
-#
-# pdb.set_trace()
-#
-# while outputs != []:
-#     o = outputs.pop(random.randrange(len(outputs)))
-#     i = random.choice(inputs)
-#
-#     while creates_loop(o,i):
-#         i = random.choice(inputs)
-#
-#     i.connect(o)
-#     connections.append((i,o))
-#
-#     if type(i.owner) == Nand:
-#         outputs += i.owner.i
-#         n = Nand()
-#         inputs += n.o
-#
-#     print(inputs,outputs,connections)
-#
-# print(io.calc())
+io = IO(2,1)
+inputs = list(io.i)
+outputs = list(io.o)
+connections = []
+
+n = Nand()
+inputs += n.o
+
+while outputs != []:
+    o = outputs.pop(random.randrange(len(outputs)))
+    i = random.choice(inputs)
+
+    while creates_loop(o,i):
+        i = random.choice(inputs)
+
+    i.connect(o)
+    connections.append((i,o))
+
+    if type(i.owner) == Nand:
+        outputs += i.owner.i
+        n = Nand()
+        inputs += n.o
+
+    print("Inputs: {}\nOutputs: {}\nConnections: {}".format(inputs,outputs,connections))
+
+print(io.calc())
