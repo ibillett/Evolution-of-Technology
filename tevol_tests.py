@@ -1,4 +1,4 @@
-from tevol import Connector, Nand, IO, creates_loop
+from tevol import Connector, Nand, IO, creates_loop, match
 import unittest
 
 class TestCircuits(unittest.TestCase):
@@ -140,6 +140,12 @@ class TestCircularConnections(unittest.TestCase):
 
         is_loop = creates_loop(b.o[0],c.i[0])
         self.assertFalse(is_loop)
+
+class TestGateMatching(unittest.TestCase):
+    def test_match_gate(self):
+        result = {'11':'1', '00':'0', '01':'1', '10':'1'}
+        is_match = match(result)
+        self.assertTrue(is_match)
 
 if __name__ == '__main__':
     unittest.main()

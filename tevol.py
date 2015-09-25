@@ -1,9 +1,12 @@
+from logic_gates import not_, and_, or_, xor_, half_
 import itertools
 import unittest
 import random
 import string
 import sys
 import pdb
+
+gates = [half_]
 
 class Connector:
     """
@@ -106,43 +109,54 @@ def creates_loop(o,i):
                 return True
     return False
 
-io = IO(1,1)
-inputs = list(io.i)
-outputs = list(io.o)
-connections = []
+def match(res):
+    for gate in gates:
+        if gate == res:
+            return True
+    return False
 
-n = Nand()
-inputs += n.o
+if __name__ == '__main__':
 
-while outputs != []:
-    o = outputs.pop(random.randrange(len(outputs)))
-    i = random.choice(inputs)
+    result = []
+    results = []
+    count = []
+    iteration = 0
 
-    while creates_loop(o,i):
-        i = random.choice(inputs)
+    while not match(result):
 
-    i.connect(o)
-    connections.append((i,o))
-
-    if type(i.owner) == Nand:
-        outputs += i.owner.i
+        io = IO(2,2)
+        inputs = list(io.i)  # Creates copy of IO inputs
+        outputs = list(io.o) # Creates copy of IO outputs
+        connections = []
         n = Nand()
         inputs += n.o
 
-print("Inputs: {}\nOutputs: {}\nConnections: {}".format(inputs,outputs,connections))
-print(io.calc())
+        while outputs != []:
+            o = outputs.pop(random.randrange(len(outputs)))
+            i = random.choice(inputs)
 
-or_gate = {'00':'0',
-           '01':'1',
-           '10':'1',
-           '11':'1'}
+            while creates_loop(o,i):
+                i = random.choice(inputs)
 
-and_gate = {'00':'0',
-            '01':'0',
-            '10':'0',
-            '11':'1'}
+            i.connect(o)
+            connections.append((i,o))
 
-xor_gate = {'00':'0',
-            '01':'1',
-            '10':'1',
-            '11':'1'}
+            if type(i.owner) == Nand:
+                outputs += i.owner.i
+                n = Nand()
+                inputs += n.o
+
+        result = io.calc()
+
+        if result in results:
+            index = results.index(result)
+            count[index] += 1
+        else:
+            results.append(result)
+            count.append(0)
+        # print("Inputs: {}\nOutputs: {}\nConnections: {}".format(inputs,outputs,connections))
+        iteration += 1
+        if iteration % 100 == 0:
+            print("Iteration {}".format(iteration))
+
+    print(result,iteration)
